@@ -1,0 +1,587 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Identificador de Bandeira - Cartão de Crédito</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .container {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            max-width: 500px;
+            width: 100%;
+            text-align: center;
+            animation: slideUp 0.6s ease-out;
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .header {
+            margin-bottom: 30px;
+        }
+
+        .header h1 {
+            color: #2c3e50;
+            font-size: 2.2em;
+            margin-bottom: 10px;
+            font-weight: 700;
+        }
+
+        .header p {
+            color: #7f8c8d;
+            font-size: 1.1em;
+            line-height: 1.6;
+        }
+
+        .card-visual {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            border-radius: 15px;
+            padding: 25px;
+            margin: 30px 0;
+            color: white;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .card-visual::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(135deg, transparent, rgba(255, 255, 255, 0.1));
+            pointer-events: none;
+        }
+
+        .card-number {
+            font-family: 'Courier New', monospace;
+            font-size: 1.8em;
+            font-weight: bold;
+            letter-spacing: 3px;
+            margin-bottom: 15px;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+        }
+
+        .card-info {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 0.9em;
+        }
+
+        .brand-info {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .brand-logo {
+            width: 50px;
+            height: 30px;
+            background: white;
+            border-radius: 5px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            color: #2c3e50;
+            font-size: 0.8em;
+        }
+
+        .input-group {
+            margin-bottom: 30px;
+        }
+
+        .input-group label {
+            display: block;
+            color: #2c3e50;
+            font-weight: 600;
+            margin-bottom: 10px;
+            text-align: left;
+        }
+
+        .card-input {
+            width: 100%;
+            padding: 15px 20px;
+            border: 2px solid #e0e0e0;
+            border-radius: 12px;
+            font-size: 1.1em;
+            font-family: 'Courier New', monospace;
+            letter-spacing: 2px;
+            transition: all 0.3s ease;
+            background: #f8f9fa;
+        }
+
+        .card-input:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+            background: white;
+        }
+
+        .card-input.valid {
+            border-color: #27ae60;
+            background: #f8fff8;
+        }
+
+        .card-input.invalid {
+            border-color: #e74c3c;
+            background: #fff8f8;
+        }
+
+        .result {
+            padding: 20px;
+            border-radius: 12px;
+            margin-top: 20px;
+            font-weight: 600;
+            font-size: 1.1em;
+            transition: all 0.3s ease;
+            opacity: 0;
+            transform: translateY(10px);
+        }
+
+        .result.show {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .result.success {
+            background: linear-gradient(135deg, #27ae60, #2ecc71);
+            color: white;
+            box-shadow: 0 5px 15px rgba(39, 174, 96, 0.3);
+        }
+
+        .result.error {
+            background: linear-gradient(135deg, #e74c3c, #c0392b);
+            color: white;
+            box-shadow: 0 5px 15px rgba(231, 76, 60, 0.3);
+        }
+
+        .examples {
+            margin-top: 30px;
+            text-align: left;
+        }
+
+        .examples h3 {
+            color: #2c3e50;
+            margin-bottom: 15px;
+            font-size: 1.2em;
+        }
+
+        .example-list {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 12px;
+            border-left: 4px solid #667eea;
+        }
+
+        .example-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 8px 0;
+            border-bottom: 1px solid #e0e0e0;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .example-item:last-child {
+            border-bottom: none;
+        }
+
+        .example-item:hover {
+            background: rgba(102, 126, 234, 0.1);
+            border-radius: 8px;
+            padding-left: 10px;
+        }
+
+        .example-number {
+            font-family: 'Courier New', monospace;
+            font-weight: bold;
+            color: #2c3e50;
+        }
+
+        .example-brand {
+            color: #667eea;
+            font-weight: 600;
+        }
+
+        .github-info {
+            margin-top: 30px;
+            padding: 20px;
+            background: linear-gradient(135deg, #24292e, #2f363d);
+            color: white;
+            border-radius: 12px;
+            text-align: left;
+        }
+
+        .github-info h3 {
+            margin-bottom: 10px;
+            color: #58a6ff;
+        }
+
+        .github-info p {
+            line-height: 1.6;
+            margin-bottom: 10px;
+        }
+
+        .tech-stack {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin-top: 15px;
+        }
+
+        .tech-tag {
+            background: rgba(88, 166, 255, 0.2);
+            color: #58a6ff;
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 0.85em;
+            border: 1px solid rgba(88, 166, 255, 0.3);
+        }
+
+        @media (max-width: 600px) {
+            .container {
+                padding: 30px 20px;
+                margin: 10px;
+            }
+            
+            .header h1 {
+                font-size: 1.8em;
+            }
+            
+            .card-number {
+                font-size: 1.4em;
+                letter-spacing: 2px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🏦 Identificador de Bandeira</h1>
+            <p>Digite o número do seu cartão de crédito para identificar automaticamente a bandeira</p>
+        </div>
+
+        <div class="card-visual" id="cardVisual">
+            <div class="card-number" id="cardNumber">•••• •••• •••• ••••</div>
+            <div class="card-info">
+                <div class="brand-info">
+                    <div class="brand-logo" id="brandLogo">???</div>
+                    <span id="brandName">Bandeira Desconhecida</span>
+                </div>
+                <div>12/28</div>
+            </div>
+        </div>
+
+        <div class="input-group">
+            <label for="cardNumberInput">Número do Cartão:</label>
+            <input 
+                type="text" 
+                id="cardNumberInput" 
+                class="card-input" 
+                placeholder="Digite o número do cartão..."
+                maxlength="19"
+            >
+        </div>
+
+        <div id="result" class="result"></div>
+
+        <div class="examples">
+            <h3>💡 Exemplos para Testar:</h3>
+            <div class="example-list">
+                <div class="example-item" onclick="testCard('4111111111111111')">
+                    <span class="example-number">4111 1111 1111 1111</span>
+                    <span class="example-brand">Visa</span>
+                </div>
+                <div class="example-item" onclick="testCard('5555555555554444')">
+                    <span class="example-number">5555 5555 5555 4444</span>
+                    <span class="example-brand">MasterCard</span>
+                </div>
+                <div class="example-item" onclick="testCard('378282246310005')">
+                    <span class="example-number">3782 8224 6310 005</span>
+                    <span class="example-brand">American Express</span>
+                </div>
+                <div class="example-item" onclick="testCard('30569309025904')">
+                    <span class="example-number">3056 9309 0259 04</span>
+                    <span class="example-brand">Diners Club</span>
+                </div>
+                <div class="example-item" onclick="testCard('6011111111111117')">
+                    <span class="example-number">6011 1111 1111 1117</span>
+                    <span class="example-brand">Discover</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="github-info">
+            <h3>🚀 Desenvolvido com GitHub Copilot</h3>
+            <p><strong>Desafio:</strong> Criar uma aplicação para identificar bandeiras de cartão de crédito utilizando IA como assistente de desenvolvimento.</p>
+            <p><strong>Funcionalidades:</strong> Identificação automática, validação em tempo real, interface responsiva e exemplos interativos.</p>
+            <div class="tech-stack">
+                <span class="tech-tag">HTML5</span>
+                <span class="tech-tag">CSS3</span>
+                <span class="tech-tag">JavaScript</span>
+                <span class="tech-tag">GitHub Copilot</span>
+                <span class="tech-tag">Responsive Design</span>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Padrões das bandeiras de cartão de crédito
+        const cardPatterns = {
+            visa: {
+                pattern: /^4[0-9]{12}(?:[0-9]{3})?$/,
+                name: 'Visa',
+                logo: 'VISA',
+                color: 'linear-gradient(135deg, #1a1f71, #0f4c75)'
+            },
+            mastercard: {
+                pattern: /^5[1-5][0-9]{14}$/,
+                name: 'MasterCard',
+                logo: 'MC',
+                color: 'linear-gradient(135deg, #eb001b, #f79e1b)'
+            },
+            amex: {
+                pattern: /^3[47][0-9]{13}$/,
+                name: 'American Express',
+                logo: 'AMEX',
+                color: 'linear-gradient(135deg, #006fcf, #00a0df)'
+            },
+            diners: {
+                pattern: /^3[0689][0-9]{11,13}$/,
+                name: 'Diners Club',
+                logo: 'DC',
+                color: 'linear-gradient(135deg, #0079be, #00a1c9)'
+            },
+            discover: {
+                pattern: /^6(?:011|5[0-9]{2})[0-9]{12}$/,
+                name: 'Discover',
+                logo: 'DISC',
+                color: 'linear-gradient(135deg, #ee8020, #f8981d)'
+            },
+            jcb: {
+                pattern: /^(?:2131|1800|35\d{3})\d{11}$/,
+                name: 'JCB',
+                logo: 'JCB',
+                color: 'linear-gradient(135deg, #006c5b, #00a86b)'
+            },
+            elo: {
+                pattern: /^(?:4011|4312|4389|4514|4573|5041|5066|5067|6277|6363|6504|6516|6550)[0-9]{10,15}$/,
+                name: 'Elo',
+                logo: 'ELO',
+                color: 'linear-gradient(135deg, #ffcb05, #ff6900)'
+            }
+        };
+
+        const cardInput = document.getElementById('cardNumberInput');
+        const cardNumber = document.getElementById('cardNumber');
+        const brandName = document.getElementById('brandName');
+        const brandLogo = document.getElementById('brandLogo');
+        const cardVisual = document.getElementById('cardVisual');
+        const result = document.getElementById('result');
+
+        // Função para formatar o número do cartão
+        function formatCardNumber(value) {
+            // Remove todos os caracteres não numéricos
+            const cleaned = value.replace(/\D/g, '');
+            
+            // Aplica formatação baseada na bandeira
+            if (cleaned.length <= 4) {
+                return cleaned;
+            } else if (cleaned.length <= 8) {
+                return cleaned.slice(0, 4) + ' ' + cleaned.slice(4);
+            } else if (cleaned.length <= 12) {
+                return cleaned.slice(0, 4) + ' ' + cleaned.slice(4, 8) + ' ' + cleaned.slice(8);
+            } else {
+                return cleaned.slice(0, 4) + ' ' + cleaned.slice(4, 8) + ' ' + cleaned.slice(8, 12) + ' ' + cleaned.slice(12, 16);
+            }
+        }
+
+        // Função para identificar a bandeira do cartão
+        function identifyCardBrand(number) {
+            const cleanNumber = number.replace(/\D/g, '');
+            
+            for (const [key, brand] of Object.entries(cardPatterns)) {
+                if (brand.pattern.test(cleanNumber)) {
+                    return brand;
+                }
+            }
+            
+            return null;
+        }
+
+        // Função para validar usando algoritmo de Luhn
+        function luhnCheck(number) {
+            const cleanNumber = number.replace(/\D/g, '');
+            let sum = 0;
+            let alternate = false;
+            
+            for (let i = cleanNumber.length - 1; i >= 0; i--) {
+                let digit = parseInt(cleanNumber.charAt(i));
+                
+                if (alternate) {
+                    digit *= 2;
+                    if (digit > 9) {
+                        digit = (digit % 10) + 1;
+                    }
+                }
+                
+                sum += digit;
+                alternate = !alternate;
+            }
+            
+            return (sum % 10) === 0;
+        }
+
+        // Função para atualizar a visualização do cartão
+        function updateCardVisual(inputValue) {
+            const formatted = formatCardNumber(inputValue);
+            const brand = identifyCardBrand(inputValue);
+            
+            // Atualiza o número do cartão
+            if (formatted) {
+                cardNumber.textContent = formatted + '•'.repeat(Math.max(0, 19 - formatted.length));
+            } else {
+                cardNumber.textContent = '•••• •••• •••• ••••';
+            }
+            
+            // Atualiza a bandeira
+            if (brand) {
+                brandName.textContent = brand.name;
+                brandLogo.textContent = brand.logo;
+                cardVisual.style.background = brand.color;
+                
+                // Valida o número
+                const isValid = luhnCheck(inputValue);
+                showResult(brand.name, isValid);
+                
+                cardInput.className = 'card-input ' + (isValid ? 'valid' : 'invalid');
+            } else {
+                brandName.textContent = 'Bandeira Desconhecida';
+                brandLogo.textContent = '???';
+                cardVisual.style.background = 'linear-gradient(135deg, #667eea, #764ba2)';
+                cardInput.className = 'card-input';
+                
+                if (inputValue.replace(/\D/g, '').length > 10) {
+                    showResult('Bandeira não reconhecida', false);
+                } else {
+                    hideResult();
+                }
+            }
+        }
+
+        // Função para mostrar o resultado
+        function showResult(brandName, isValid) {
+            const cleanNumber = cardInput.value.replace(/\D/g, '');
+            
+            if (isValid) {
+                result.innerHTML = `
+                    <div style="display: flex; align-items: center; justify-content: center; gap: 10px;">
+                        <span style="font-size: 1.5em;">✅</span>
+                        <div>
+                            <div><strong>${brandName}</strong> identificada com sucesso!</div>
+                            <div style="font-size: 0.9em; margin-top: 5px; opacity: 0.9;">
+                                Número válido (${cleanNumber.length} dígitos)
+                            </div>
+                        </div>
+                    </div>
+                `;
+                result.className = 'result success show';
+            } else {
+                result.innerHTML = `
+                    <div style="display: flex; align-items: center; justify-content: center; gap: 10px;">
+                        <span style="font-size: 1.5em;">❌</span>
+                        <div>
+                            <div><strong>Número inválido</strong></div>
+                            <div style="font-size: 0.9em; margin-top: 5px; opacity: 0.9;">
+                                ${brandName === 'Bandeira não reconhecida' ? 'Bandeira não reconhecida' : 'Falha na validação de Luhn'}
+                            </div>
+                        </div>
+                    </div>
+                `;
+                result.className = 'result error show';
+            }
+        }
+
+        // Função para esconder o resultado
+        function hideResult() {
+            result.className = 'result';
+        }
+
+        // Função para testar com números de exemplo
+        function testCard(number) {
+            cardInput.value = number;
+            updateCardVisual(number);
+            
+            // Anima o input para chamar atenção
+            cardInput.style.transform = 'scale(1.02)';
+            setTimeout(() => {
+                cardInput.style.transform = 'scale(1)';
+            }, 200);
+        }
+
+        // Event listener para o input
+        cardInput.addEventListener('input', function(e) {
+            let value = e.target.value;
+            
+            // Limita a 19 caracteres (16 dígitos + 3 espaços)
+            if (value.length > 19) {
+                value = value.slice(0, 19);
+            }
+            
+            // Formata automaticamente
+            const formatted = formatCardNumber(value);
+            e.target.value = formatted;
+            
+            updateCardVisual(value);
+        });
+
+        // Impede caracteres não numéricos (exceto espaços)
+        cardInput.addEventListener('keypress', function(e) {
+            const char = String.fromCharCode(e.which);
+            if (!/[0-9\s]/.test(char)) {
+                e.preventDefault();
+            }
+        });
+
+        // Inicialização
+        document.addEventListener('DOMContentLoaded', function() {
+            cardInput.focus();
+        });
+    </script>
+</body>
+</html>
